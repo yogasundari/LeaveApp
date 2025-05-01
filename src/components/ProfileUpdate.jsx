@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState } from "react";
+import "../css/ProfileUpdatestyle.css";
 
 const ProfileUpdate = () => {
-  // Initializing state variables
   const [employee, setEmployee] = useState({
     empName: "",
     designation: "",
     staffType: "",
     profilePicture: "",
     approvalFlowId: "",
-    dateOfJoining: "",
+    joiningDate: "",
+    department: "", // Added department field
   });
+
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [image, setImage] = useState("");
 
-  // Get empId and token from localStorage
   const empId = localStorage.getItem("empId");
   const token = localStorage.getItem("jwtToken");
 
-  // Handle input changes for editable fields
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEmployee({
@@ -27,7 +29,33 @@ const ProfileUpdate = () => {
     });
   };
 
-  // Handle form submission to update profile
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+        setEmployee({
+          ...employee,
+          profilePicture: reader.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Format date to yyyy-MM-dd if needed
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Add leading zero
+    const day = String(date.getDate()).padStart(2, "0"); // Add leading zero
+    return `${year}-${month}-${day}`;
+  };
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -39,133 +67,37 @@ const ProfileUpdate = () => {
         throw new Error("Authentication details missing. Please log in again.");
       }
 
-      // Send PUT request to the backend to update the profile
+      const formattedEmployee = {
+        ...employee,
+        dateOfJoining: formatDate(employee.dateOfJoining), // Format the date explicitly
+      };
+
       const response = await fetch(`http://localhost:8080/api/employees/update/${empId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(employee),
+        body: JSON.stringify(formattedEmployee),
       });
 
       if (!response.ok) {
         throw new Error("Failed to update profile. Please try again.");
       }
-      const textResponse = await response.text(); // Get the raw response as text
 
-      if (!response.ok) {
-        throw new Error(textResponse || "Failed to update profile.");
-      }
-  
-      setSuccessMessage(textResponse); // Show raw success message
-      console.log("Update Success:", textResponse);
-
-      // Now try to parse it to JSON
-      const data = JSON.parse(textResponse);
+      const textResponse = await response.text();
       setSuccessMessage("Profile updated successfully!");
-      console.log("Updated Employee:", data);
-    } 
-    //catch (error) {
-      //setErrorMessage(error.message || "An error occurred while updating the profile.");
-   // } 
-    finally {
+      console.log("Update Success:", textResponse);
+    } catch (error) {
+      setErrorMessage(error.message || "An error occurred while updating the profile.");
+      console.error("Error updating profile:", error);
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <>
-      <style>
-        {`
-          .profile-update-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f3f4f6;
-            padding: 20px;
-          }
-
-          .profile-update-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-          }
-
-          .profile-update-card h2 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #1f2937;
-            text-align: center;
-          }
-
-          .profile-update-card label {
-            display: block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #374151;
-          }
-
-          .profile-update-card input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #374151;
-            box-sizing: border-box;
-          }
-
-          .profile-update-card input:disabled {
-            background-color: #f9fafb;
-            color: #9ca3af;
-          }
-
-          .profile-update-card button {
-            width: 100%;
-            padding: 12px;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-          }
-
-          .profile-update-card button:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
-          }
-
-          .profile-update-card button:hover:not(:disabled) {
-            background-color: #1d4ed8;
-          }
-
-          .message {
-            margin-top: 20px;
-            font-weight: bold;
-            text-align: center;
-          }
-
-          .error {
-            color: red;
-          }
-
-          .success {
-            color: green;
-          }
-        `}
-      </style>
-
       <div className="profile-update-wrapper">
         <div className="profile-update-card">
           <h2>Update Profile</h2>
@@ -173,6 +105,22 @@ const ProfileUpdate = () => {
           {successMessage && <div className="message success">{successMessage}</div>}
 
           <form onSubmit={handleSubmit}>
+          <div className="profile-pic-container">
+            <label htmlFor="imageUpload" className="profile-pic-label">
+              <img
+                src={image || "/default-avatar.png"}
+                alt="Profile"
+                className="profile-pic"
+              />
+            </label>
+            <input
+              type="file"
+              id="imageUpload"
+              accept="image/png, image/jpeg, image/jpg"
+              onChange={handleImageUpload}
+              style={{ display: "none" }}
+            />
+          </div>
             <div>
               <label>Employee Name</label>
               <input
@@ -208,26 +156,36 @@ const ProfileUpdate = () => {
             </div>
 
             <div>
-              <label>Profile Picture URL</label>
-              <input
-                type="text"
-                name="profilePicture"
-                value={employee.profilePicture}
-                onChange={handleChange}
-                placeholder="Enter profile picture URL"
-              />
-            </div>
-
-            <div>
               <label>Date of Joining</label>
-              <input 
-                type="date" 
-                id="joiningDate" 
-                name="dateOfJoining" 
+              <input
+                type="date"
+                id="joiningDate"
+                name="joiningDate"
                 value={employee.dateOfJoining}
                 onChange={handleChange}
                 required
               />
+            </div>
+
+            <div>
+              <label>Department</label>
+              <select
+                name="department"
+                value={employee.department}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Department</option>
+                <option value="HR">HR</option>
+                <option value="cse">Finance</option>
+                <option value="it">Engineering</option>
+                <option value="aids">Marketing</option>
+                <option value="aiml">Sales</option>
+                <option value="ece">Finance</option>
+                <option value="">Engineering</option>
+                <option value="aids">Marketing</option>
+                <option value="aiml">Sales</option>
+              </select>
             </div>
 
             <div>
@@ -238,7 +196,7 @@ const ProfileUpdate = () => {
                 value={employee.approvalFlowId}
                 onChange={handleChange}
                 placeholder="Enter approval flow ID"
-                disabled={employee.role !== "Admin"} // Disable for non-Admin users
+                disabled={employee.role !== "Admin"}
               />
             </div>
 

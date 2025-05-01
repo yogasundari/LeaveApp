@@ -1,0 +1,146 @@
+/* Styles for Profile Update */
+.profile-update-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 20px;
+}
+
+.profile-update-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.profile-update-card h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #1f2937;
+  text-align: center;
+}
+
+.profile-update-card label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.profile-update-card input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  box-sizing: border-box;
+}
+
+.profile-update-card button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.profile-update-card button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.profile-update-card .profile-picture-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-update-card .profile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.profile-update-card .profile-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.message {
+  margin-top: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}
+.profile-update-card select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.profile-update-card select:focus {
+  outline: none;
+  border-color: #02070f;
+
+}
+
+.profile-update-card option {
+  font-size: 14px;
+  color: #374151;
+}
+.profile-pic-container {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.profile-pic-label {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  transition: 0.3s;
+}
+
+.profile-pic:hover {
+  opacity: 0.8;
+}

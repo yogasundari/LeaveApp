@@ -24,5 +24,5 @@ class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
-
+<ProfileUpdate />
 export default ErrorBoundary;

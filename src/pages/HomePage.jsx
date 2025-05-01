@@ -2,8 +2,36 @@ import React from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import ProfileUpdate from '../components/ProfileUpdate.jsx'; // Ensure the correct import path
 import LeaveRequest from '../components/LeaveRequest.jsx';
+import Notification from '../components/Notification.jsx'; // Import Notification component
+import LeaveApprove from '../components/LeaveApprove.jsx'; // Import LeaveApprove component
+import LeaveBalance from '../components/LeaveBalance.jsx'; // Ensure the correct import path
+
 
 const HomePage = () => {
+  const handleAccept = () => {
+    console.log("Notification accepted!");
+  };
+
+  const handleReject = () => {
+    console.log("Notification rejected!");
+  };
+  const approvalFlowData = [
+    {
+      approver: "HOD",
+      status: "Approved",
+      date: "2025-04-29T10:00:00",
+      remarks: "Approved swiftly"
+    },
+    {
+      approver: "Principal",
+      status: "Pending"
+    },
+    {
+      approver: "Dean",
+      status: "Withdrawn",
+      date: "2025-04-30T15:12:00"
+    }
+  ];
   return (
     <div className="home-page">
       <style>
@@ -57,7 +85,7 @@ const HomePage = () => {
 
       {/* Greeting Header */}
       <header className="header">
-        <h1>Welcome </h1>
+        <h1>Welcome</h1>
         <p>Your one-stop solution for managing leave requests and approvals.</p>
       </header>
 
@@ -65,18 +93,32 @@ const HomePage = () => {
       <div className="dashboard-container">
         {/* Sidebar */}
         <nav className="sidebar">
-  <h2>Dashboard</h2>
-  <Link to="/home/profile-update">Update Profile</Link>
-  <Link to="/home/leave-request">Leave Request</Link>
-  <Link to="/home/approve-requests">Approve Requests</Link>
-</nav>
+          <h2>Dashboard</h2>
+          <Link to="/home/profile-update">Update Profile</Link>
+          <Link to="/home/leave-request">Leave Request</Link>
+          <Link to="/home/approve-requests">Approve Requests</Link>
+          <Link to="/home/notification">Notifications</Link> {/* Add link to Notifications */}
+          <Link to="/home/leave-balance">Leave Balance</Link>
+        </nav>
 
         {/* Main Content */}
         <div className="content">
           <Routes>
             <Route path="profile-update" element={<ProfileUpdate />} /> {/* ProfileUpdate Component */}
             <Route path="leave-request" element={<LeaveRequest />} />
-            <Route path="approve-requests" element={<div>Approve Requests Page</div>} />
+            <Route path="approve-requests" element={<LeaveApprove/>} />
+            <Route path="leave-balance" element={<LeaveBalance />} />
+          
+            <Route
+              path="notification"
+              element={
+                <Notification
+                  notificationMessage="You have a new leave request to review."
+                  onAccept={handleAccept}
+                  onReject={handleReject}
+                />
+              }
+            />
           </Routes>
         </div>
       </div>

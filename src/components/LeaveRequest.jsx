@@ -16,11 +16,14 @@ const LeaveRequest = () => {
   const [earnedDate, setEarnedDate] = useState("");
   const [medicalFile, setMedicalFile] = useState(null);
 
-  // Additional fields for Moodle Activity
+  // Additional fields for Moodle Activity and Staff Alteration
   const [classPeriod, setClassPeriod] = useState("");
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
   const [moodleLink, setMoodleLink] = useState("");
+  const [alteredFaculty, setAlteredFaculty] = useState("");
+  const [notificationStatus, setNotificationStatus] = useState("");
+  const [isAlterationSubmitted, setIsAlterationSubmitted] = useState(false);
 
   // Handle form submission
   const handleSubmit = (e) => {
@@ -38,14 +41,28 @@ const LeaveRequest = () => {
       endTime: leaveType === "Permission" ? endTime : null,
       earnedDate: leaveType === "Compoff" ? earnedDate : null,
       medicalFile: leaveType === "ML" ? medicalFile : null,
-      classPeriod: alterationMode === "Moodle Activity" ? classPeriod : null,
-      subjectCode: alterationMode === "Moodle Activity" ? subjectCode : null,
-      subjectName: alterationMode === "Moodle Activity" ? subjectName : null,
+      classPeriod: alterationMode ? classPeriod : null,
+      subjectCode: alterationMode ? subjectCode : null,
+      subjectName: alterationMode ? subjectName : null,
       moodleLink: alterationMode === "Moodle Activity" ? moodleLink : null,
+      alteredFaculty: alterationMode === "Staff Alteration" ? alteredFaculty : null,
+      notificationStatus: alterationMode === "Staff Alteration" ? notificationStatus : null,
     };
 
     console.log("Leave Request Data:", leaveRequestData);
     // You can send this data to the backend using fetch or axios
+  };
+
+  // Handle notification for Staff Alteration
+  const handleSendNotification = () => {
+    setNotificationStatus("Notification Sent");
+    console.log("Notification sent to:", alteredFaculty);
+  };
+
+  // Handle alteration submission
+  const handleAlterationSubmit = () => {
+    setIsAlterationSubmitted(true);
+    console.log("Alteration submitted successfully.");
   };
 
   return (
@@ -106,83 +123,6 @@ const LeaveRequest = () => {
             <option value="Compoff">Compensatory Leave</option>
           </select>
         </div>
-        {/* Start Time and End Time for Permission */}
-        {leaveType === "Late" && (
-          <>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Start Time:</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>End Time:</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </div>
-          </>
-        )}
-        {/* Start Time and End Time for Permission */}
-        {leaveType === "Permission" && (
-          <>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Start Time:</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>End Time:</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </div>
-          </>
-        )}
-
-        {/* Earned Date for Compoff */}
-        {leaveType === "Compoff" && (
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Earned Date:</label>
-            <input
-              type="date"
-              value={earnedDate}
-              onChange={(e) => setEarnedDate(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
-        )}
-
-        {/* File Upload for Medical Leave */}
-        {leaveType === "ML" && (
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Upload Medical Certificate:</label>
-            <input
-              type="file"
-              onChange={(e) => setMedicalFile(e.target.files[0])}
-              required
-              style={styles.input}
-            />
-          </div>
-        )}
 
         {/* Reason */}
         <div style={styles.inputGroup}>
@@ -280,11 +220,97 @@ const LeaveRequest = () => {
                 style={styles.input}
               />
             </div>
+            <div style={styles.inputGroup}>
+              <button
+                type="button"
+                onClick={handleAlterationSubmit}
+                style={styles.button}
+              >
+                Submit Alteration
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Additional Fields for Staff Alteration */}
+        {alterationMode === "Staff Alteration" && (
+          <>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Class Period:</label>
+              <input
+                type="text"
+                value={classPeriod}
+                onChange={(e) => setClassPeriod(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Subject Code:</label>
+              <input
+                type="text"
+                value={subjectCode}
+                onChange={(e) => setSubjectCode(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Subject Name:</label>
+              <input
+                type="text"
+                value={subjectName}
+                onChange={(e) => setSubjectName(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Altered Faculty:</label>
+              <input
+                type="text"
+                value={alteredFaculty}
+                onChange={(e) => setAlteredFaculty(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.inputGroup}>
+              <button
+                type="button"
+                onClick={handleSendNotification}
+                style={styles.button}
+              >
+                Send Notification
+              </button>
+              {notificationStatus && (
+                <p style={{ color: "green", marginTop: "10px" }}>
+                  {notificationStatus}
+                </p>
+              )}
+            </div>
+            <div style={styles.inputGroup}>
+              <button
+                type="button"
+                onClick={handleAlterationSubmit}
+                style={styles.button}
+              >
+                Submit Alteration
+              </button>
+            </div>
           </>
         )}
 
         {/* Submit Button */}
-        <button type="submit" style={styles.button}>
+        <button
+          type="submit"
+          style={{
+            ...styles.button,
+            backgroundColor: isAlterationSubmitted ? "#2563eb" : "#9ca3af",
+            cursor: isAlterationSubmitted ? "pointer" : "not-allowed",
+          }}
+          disabled={!isAlterationSubmitted}
+        >
           Submit Leave Request
         </button>
       </form>
