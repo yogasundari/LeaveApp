@@ -17,27 +17,31 @@ const LoginForm = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Login failed');
       }
-
+  
       const data = await response.json();
-      const token = data.token; // 👈 Extract token from response
-      const empId = data.empId; // 👈 Extract empId from response
-
+      console.log('Backend Response:', data); // Log the response to check its structure
+  
+      const token = data.token;
+      const empId = data.empId;
+      const role = data.role;
+  
       if (token) {
         localStorage.setItem('jwtToken', token);
-        localStorage.setItem("empId", empId); // Store JWT token
-        console.log('JWT Token:', token);
-        console.log('empId:', empId); // Log empId for debugging
+        localStorage.setItem('empId', empId);
+        console.log('Login successful:');
+        console.log('Token:', token);
+        console.log('Employee ID:', empId);
+        console.log('Role:', role);
+        console.log(email)
       } else {
         console.warn('No token received from server.');
       }
-
-      localStorage.setItem('loggedInEmployee', JSON.stringify(data)); // Store user info
-      console.log('Logged in successfully');
+  
       navigate('/home');
     } catch (error) {
       console.error('Login failed:', error.message);
