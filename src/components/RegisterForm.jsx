@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { register } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom'; // ✅ Add this
+
 
 const RegisterForm = () => {
+  const navigate = useNavigate(); // ✅ Hook for navigation
+
   const [email, setEmail] = useState('employee@saveetha.ac.in');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('EMPLOYEE');
-  const [employeeID, setEmployeeID] = useState('EMPID1234'); // Default value for employee ID
+  const [employeeID, setEmployeeID] = useState('EMPID1234');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -14,16 +18,19 @@ const RegisterForm = () => {
     const registerData = { empId: employeeID, email, password, role };
 
     try {
-      const response = await register(registerData);
-      console.log('Registration successful', response);
-      setSuccessMessage('Registration successful! Please log in.');
+      await register(registerData);
+      setSuccessMessage('Registration successful! Redirecting to login...');
       setError('');
+      setTimeout(() => {
+        navigate('/login'); // ✅ Manual redirect after success
+      }, 1500);
     } catch (error) {
       console.error('Registration failed', error);
       setError('Registration failed. Please try again.');
       setSuccessMessage('');
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
